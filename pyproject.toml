@@ -15,7 +15,7 @@ passlib = "^1.7.4"
 bcrypt = "^3.2.2"
 python-jose = "^3.5.0"
 alembic = "^1.18.4"
-email-validator = "^1.5.0"
+email-validator = "^2.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"

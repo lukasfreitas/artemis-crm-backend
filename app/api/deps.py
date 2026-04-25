@@ -9,15 +9,20 @@ from app.models.user import User
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
+def get_token_payload(token: str, expected_type: str = "access"):
+    payload = decode_token(token)
+
+    if not payload or payload.get("type") != expected_type:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    return payload
+
+
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
-    payload = decode_token(token)
-
-    if not payload:
-        raise HTTPException(status_code=401, detail="Token inválido")
-
+    payload = get_token_payload(token, expected_type="access")
     user_id = payload.get("sub")
 
     user = db.query(User).filter(User.id == user_id).first()

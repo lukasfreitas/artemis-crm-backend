@@ -1,8 +1,8 @@
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8)
 
 
 class UserResponse(BaseModel):
@@ -21,9 +21,19 @@ class RegisterResponse(UserResponse):
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8)
 
 
-class TokenResponse(BaseModel):
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: str
+
+
+class TokenPairResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
+    user: UserResponse

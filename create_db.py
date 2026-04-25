@@ -1,4 +1,4 @@
 from app.core.database import Base, engine
-from app.models import user
+from app import models
 
 Base.metadata.create_all(bind=engine)

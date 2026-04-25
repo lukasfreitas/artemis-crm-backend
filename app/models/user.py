@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Boolean, Column, String
+from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 import uuid
+
 
 class User(Base):
     __tablename__ = "users"
@@ -9,3 +12,4 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     is_active = Column(Boolean, default=True)
+    auth_sessions = relationship("AuthSession", backref="user", cascade="all, delete-orphan")
