@@ -12,4 +12,5 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False, nullable=False)
     auth_sessions = relationship("AuthSession", backref="user", cascade="all, delete-orphan")

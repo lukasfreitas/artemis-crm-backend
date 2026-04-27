@@ -9,6 +9,7 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     is_active: bool
+    is_admin: bool
 
     model_config = ConfigDict(from_attributes=True)
 
