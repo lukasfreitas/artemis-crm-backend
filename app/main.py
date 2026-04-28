@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, permission_groups, user_profile
+from app.api.routes import auth, contact_messages, permission_groups, user_profile
 
 
 def get_cors_origins():
@@ -23,6 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth.router)
+app.include_router(contact_messages.router)
 app.include_router(permission_groups.router)
 app.include_router(user_profile.router)
 
