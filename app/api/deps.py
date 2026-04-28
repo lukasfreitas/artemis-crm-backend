@@ -1,12 +1,12 @@
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import decode_token
 from app.models.user import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+bearer_scheme = HTTPBearer()
 
 
 def get_token_payload(token: str, expected_type: str = "access"):
@@ -19,9 +19,10 @@ def get_token_payload(token: str, expected_type: str = "access"):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ):
+    token = credentials.credentials
     payload = get_token_payload(token, expected_type="access")
     user_id = payload.get("sub")
 
