@@ -45,8 +45,7 @@ def get_current_active_user(
 def require_admin(
     current_user: User = Depends(get_current_user),
 ):
-    # ajuste conforme seu model
-    if not getattr(current_user, "is_admin", False):
+    if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="Acesso negado")
 
     return current_user

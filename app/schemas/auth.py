@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+from app.schemas.permission_group import PermissionGroupResponse
+
 
 class UserProfileResponse(BaseModel):
     id: str
@@ -20,6 +22,8 @@ class UserResponse(BaseModel):
     email: EmailStr
     is_active: bool
     is_admin: bool
+    is_influencer: bool
+    permission_group: PermissionGroupResponse | None = None
     profile: UserProfileResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -18,6 +18,9 @@ def test_register_user_success(db_session):
     assert user.email == "user@example.com"
     assert user.password_hash != "password123"
     assert user.is_active is True
+    assert user.permission_group is not None
+    assert user.permission_group.title == "User"
+    assert user.is_admin is False
 
 
 def test_register_user_duplicate(db_session):

@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from app.models.auth_session import AuthSession
 from app.models.user import User
 from app.models.user_profile import UserProfile
+from app.services.permission_group_service import get_or_create_default_user_group
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -44,9 +45,11 @@ def register_user(db: Session, email: str, password: str):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email já cadastrado")
 
+    permission_group = get_or_create_default_user_group(db)
     user = User(
         email=email,
-        password_hash=hash_password(password)
+        password_hash=hash_password(password),
+        permission_group_id=permission_group.id,
     )
     user.profile = UserProfile()
 
