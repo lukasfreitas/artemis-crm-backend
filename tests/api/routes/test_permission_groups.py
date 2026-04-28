@@ -65,6 +65,27 @@ def test_create_permission_group_as_admin(client, db_session):
     assert data["description"] == "Influencer users"
     assert data["is_admin"] is False
     assert data["is_influencer"] is True
+    assert data["is_default_type"] is False
+
+
+def test_create_default_permission_group_as_admin_unsets_previous_default(client, db_session):
+    admin_group = PermissionGroup(title="Admin", is_admin=True)
+    previous_default = PermissionGroup(title="Member", is_default_type=True)
+    db_session.add_all([admin_group, previous_default])
+    db_session.commit()
+
+    token = authenticate(client, db_session, admin_group)
+
+    response = client.post(
+        "/permission-groups",
+        json={"title": "Influencer", "is_default_type": True},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    db_session.refresh(previous_default)
+
+    assert response.status_code == 200
+    assert response.json()["is_default_type"] is True
+    assert previous_default.is_default_type is False
 
 
 def test_list_permission_groups_as_admin(client, db_session):

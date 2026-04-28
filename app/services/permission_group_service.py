@@ -13,15 +13,45 @@ def get_permission_group_by_title(db: Session, title: str):
     return db.query(PermissionGroup).filter(PermissionGroup.title == title).first()
 
 
+def get_default_permission_group(db: Session):
+    return db.query(PermissionGroup).filter(PermissionGroup.is_default_type.is_(True)).first()
+
+
+def unset_default_permission_groups(db: Session):
+    (
+        db.query(PermissionGroup)
+        .filter(PermissionGroup.is_default_type.is_(True))
+        .update({PermissionGroup.is_default_type: False}, synchronize_session=False)
+    )
+
+
+def unset_other_default_permission_groups(db: Session, default_group_id: str):
+    (
+        db.query(PermissionGroup)
+        .filter(PermissionGroup.id != default_group_id)
+        .update({PermissionGroup.is_default_type: False}, synchronize_session=False)
+    )
+
+
 def get_or_create_default_user_group(db: Session):
+    group = get_default_permission_group(db)
+    if group:
+        return group
+
     group = get_permission_group_by_title(db, DEFAULT_USER_GROUP_TITLE)
     if group:
+        unset_other_default_permission_groups(db, group.id)
+        group.is_default_type = True
+        db.commit()
+        db.refresh(group)
         return group
 
     group = PermissionGroup(
         title=DEFAULT_USER_GROUP_TITLE,
         description="Default user permission group",
+        is_default_type=True,
     )
+    unset_default_permission_groups(db)
     db.add(group)
     db.commit()
     db.refresh(group)
@@ -63,6 +93,9 @@ def create_permission_group(db: Session, data: PermissionGroupCreate):
     if existing_group:
         raise HTTPException(status_code=400, detail="Grupo de permissões já existe")
 
+    if data.is_default_type:
+        unset_default_permission_groups(db)
+
     group = PermissionGroup(**data.model_dump())
     db.add(group)
     db.commit()
@@ -79,6 +112,9 @@ def update_permission_group(db: Session, permission_group_id: str, data: Permiss
         existing_group = get_permission_group_by_title(db, update_data["title"])
         if existing_group and existing_group.id != group.id:
             raise HTTPException(status_code=400, detail="Grupo de permissões já existe")
+
+    if update_data.get("is_default_type") is True:
+        unset_other_default_permission_groups(db, group.id)
 
     for field, value in update_data.items():
         setattr(group, field, value)

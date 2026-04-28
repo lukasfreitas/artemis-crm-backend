@@ -6,6 +6,7 @@ class PermissionGroupBase(BaseModel):
     description: str | None = None
     is_admin: bool = False
     is_influencer: bool = False
+    is_default_type: bool = False
 
 
 class PermissionGroupCreate(PermissionGroupBase):
@@ -17,6 +18,7 @@ class PermissionGroupUpdate(BaseModel):
     description: str | None = None
     is_admin: bool | None = None
     is_influencer: bool | None = None
+    is_default_type: bool | None = None
 
 
 class PermissionGroupResponse(PermissionGroupBase):

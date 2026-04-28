@@ -18,6 +18,7 @@ def test_get_or_create_default_user_group(db_session):
     assert group.title == "User"
     assert group.is_admin is False
     assert group.is_influencer is False
+    assert group.is_default_type is True
 
 
 def test_get_or_create_admin_group(db_session):
@@ -41,6 +42,22 @@ def test_create_permission_group(db_session):
     assert group.title == "Influencer"
     assert group.description == "Influencer users"
     assert group.is_influencer is True
+    assert group.is_default_type is False
+
+
+def test_create_default_permission_group_unsets_previous_default(db_session):
+    previous_default = PermissionGroup(title="Member", is_default_type=True)
+    db_session.add(previous_default)
+    db_session.commit()
+
+    new_default = create_permission_group(
+        db_session,
+        PermissionGroupCreate(title="Influencer", is_default_type=True),
+    )
+    db_session.refresh(previous_default)
+
+    assert new_default.is_default_type is True
+    assert previous_default.is_default_type is False
 
 
 def test_create_permission_group_rejects_duplicate_title(db_session):
@@ -68,6 +85,24 @@ def test_update_permission_group(db_session):
 
     assert updated.title == "Editor"
     assert updated.is_influencer is True
+
+
+def test_update_default_permission_group_unsets_previous_default(db_session):
+    previous_default = PermissionGroup(title="Member", is_default_type=True)
+    next_default = PermissionGroup(title="Influencer")
+    db_session.add_all([previous_default, next_default])
+    db_session.commit()
+    db_session.refresh(next_default)
+
+    updated = update_permission_group(
+        db_session,
+        next_default.id,
+        PermissionGroupUpdate(is_default_type=True),
+    )
+    db_session.refresh(previous_default)
+
+    assert updated.is_default_type is True
+    assert previous_default.is_default_type is False
 
 
 def test_delete_permission_group(db_session):

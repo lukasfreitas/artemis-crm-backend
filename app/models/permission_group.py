@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, String
+from sqlalchemy import Boolean, Column, Index, String
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -14,5 +14,15 @@ class PermissionGroup(Base):
     description = Column(String, nullable=True)
     is_admin = Column(Boolean, default=False, nullable=False)
     is_influencer = Column(Boolean, default=False, nullable=False)
+    is_default_type = Column(Boolean, default=False, nullable=False)
 
     users = relationship("User", back_populates="permission_group")
+
+
+Index(
+    "uq_permission_groups_default_type",
+    PermissionGroup.is_default_type,
+    unique=True,
+    sqlite_where=PermissionGroup.is_default_type.is_(True),
+    postgresql_where=PermissionGroup.is_default_type.is_(True),
+)

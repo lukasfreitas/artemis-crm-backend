@@ -20,6 +20,7 @@ def test_register_user_success(db_session):
     assert user.is_active is True
     assert user.permission_group is not None
     assert user.permission_group.title == "User"
+    assert user.permission_group.is_default_type is True
     assert user.is_admin is False
 
 

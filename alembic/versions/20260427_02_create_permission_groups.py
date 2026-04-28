@@ -32,7 +32,6 @@ def upgrade() -> None:
         ["title"],
         unique=True,
     )
-
     op.execute(
         """
         INSERT INTO permission_groups (id, title, description, is_admin, is_influencer)
