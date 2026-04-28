@@ -14,3 +14,9 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False, nullable=False)
     auth_sessions = relationship("AuthSession", backref="user", cascade="all, delete-orphan")
+    profile = relationship(
+        "UserProfile",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )

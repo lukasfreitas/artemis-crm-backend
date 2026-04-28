@@ -5,6 +5,7 @@ from fastapi import HTTPException
 
 from app.models.auth_session import AuthSession
 from app.models.user import User
+from app.models.user_profile import UserProfile
 from app.core.security import (
     create_access_token,
     create_refresh_token,
@@ -47,6 +48,7 @@ def register_user(db: Session, email: str, password: str):
         email=email,
         password_hash=hash_password(password)
     )
+    user.profile = UserProfile()
 
     db.add(user)
     db.commit()
