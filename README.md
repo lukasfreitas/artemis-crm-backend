@@ -15,6 +15,39 @@ Rodar a API localmente:
 poetry run uvicorn app.main:app --reload
 ```
 
+## Docker
+
+Subir a API com PostgreSQL local:
+
+```bash
+docker compose up --build
+```
+
+A API ficara disponivel em:
+
+```bash
+http://localhost:8000
+```
+
+O Compose executa `alembic upgrade head` antes de iniciar a API. Para rodar comandos dentro do container:
+
+```bash
+docker compose exec api alembic current
+docker compose exec api python create_superuser.py --email admin@example.com
+```
+
+Parar os containers:
+
+```bash
+docker compose down
+```
+
+Remover tambem o volume local do PostgreSQL:
+
+```bash
+docker compose down -v
+```
+
 Verificar a URL do banco carregada no terminal:
 
 ```bash

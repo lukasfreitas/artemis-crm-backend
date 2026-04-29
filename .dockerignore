@@ -1,0 +1,13 @@
+.git
+.pytest_cache
+__pycache__
+*.py[cod]
+.coverage
+.env
+.venv
+venv
+env
+docs
+test.db
+Dockerfile
+docker-compose.yml
